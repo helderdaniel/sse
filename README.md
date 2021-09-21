@@ -1,7 +1,7 @@
 # sse
-Simple surface engine for 2D games built on pygame
+Simple surface engine for 2D games built for Python.
 
-This is not an exhaustive game engine, it is a very simple engine to illustrate how a game engine can be built.
+This is not an exhaustive game engine, it is a very simple engine aimed at 2D game development.
 The samples have some examples on 2D simple games built with this engine.
 
 It is built on [pygame](https://www.pygame.org), a ["set of Python modules designed for writing video games"](https://www.pygame.org/wiki/about).
@@ -13,9 +13,8 @@ Some other (more complete) game engines available for Python:
 [Arcade](https://api.arcade.academy)\
 [Panda3D](https://www.panda3d.org)\
 
-If looking for triple AAA game engine develpment tools, one can try:
-[Unreal engine](https://www.unrealengine.com)
+SSE is not aimed for AAA game development. If looking for such an engine and tools, one can try: [Unreal engine](https://www.unrealengine.com)
 
-Unrteal engine languages are **Blueprints**, a visual scripting language, and **C++**.
+Unreal engine languages are **Blueprints**, a visual scripting language, and **C++**.
 
-
+However Unreal engine language is not Python, but Blueprints, a visual scripting language, and C++.
