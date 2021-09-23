@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 
 class Info(ABC):
-    '''
+    """
     Basic entities info, such as:
 
     value
@@ -13,20 +13,20 @@ class Info(ABC):
     (...)
 
     Must be defined for the type of entity desired
-    '''
+    """
     pass
 
 
 class ValueStrengthInfo(Info):
-    '''
+    """
     basic entity info on:
         value
         strength
-    '''
-    def __init__(self, value:float, strenght:float) -> None:
+    """
+    def __init__(self, value:float, strength:float) -> None:
         super.__init__()
         self._value   :float = value
-        self._strength:float = strenght
+        self._strength:float = strength
 
     @property        
     def value(self) -> float:
