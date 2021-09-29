@@ -1,7 +1,7 @@
 import unittest
 
 import pygame
-from sse.ui.gui import GUI
+from sse.ui.stage import Stage
 
 class TestGUI(unittest.TestCase):     
     
@@ -9,7 +9,7 @@ class TestGUI(unittest.TestCase):
         name  = "Testing"
         w = 100
         h = 200
-        ui = GUI(name, w, h) 
+        ui = Stage(name, w, h)
         r = ui._screen.get_rect()
         self.assertEqual(w, r.w)
         self.assertEqual(h, r.h)

@@ -1,20 +1,18 @@
 import unittest
 import pygame
-from pygame.display import init
-from sse.ui.shape import *
+from sse.ui.animation import *
 from sse.ui.gui import GUI
-
 
 class TestShape(unittest.TestCase):
     
     ui = GUI("Testing", 100, 100)  #needed to initialize Pygame Window
-    imagesPath = ["tests/ship0.png", "tests/ship1.png"]
+    imagesPath = ["data/ship0.png", "data/ship1.png", "data/ship2.png"]
     
     def setImageDefs(self, fname):
         i : Surface = pygame.image.load(fname)
         m : Mask    = pygame.mask.from_surface(i)
         r : Rect    = i.get_rect()
-        d : ImageDefinition = ImageDefinition(i, m)
+        d : Shape   = Shape(i, m)
         return i,m,r,d
 
     def test_ImageDefinition(self):
@@ -47,19 +45,37 @@ class TestShape(unittest.TestCase):
         self.assertEqual(w, d0.rect.w)
         self.assertEqual(h, d0.rect.h)
 
+        #circular
         fp.reset()
         self.assertEqual(1, fp._currentImage)
-        fp.next()
+        fp.nextc()
+        self.assertEqual(2, fp._currentImage)
+        fp.nextc()
         self.assertEqual(0, fp._currentImage)
-        fp.next()
+        fp.nextc()
         self.assertEqual(1, fp._currentImage)
-        fp.set(5)
+        fp.set(4)
         self.assertEqual(1, fp._currentImage)
-        fp.prev()
+        fp.prevc()
         self.assertEqual(0, fp._currentImage)
-        fp.prev()
+        fp.prevc()
+        self.assertEqual(2, fp._currentImage)
+        fp.prevc()
         self.assertEqual(1, fp._currentImage)
 
+        #bounded
+        fp.reset()
+        self.assertEqual(1, fp._currentImage)
+        fp.prev()
+        self.assertEqual(0, fp._currentImage)
+        fp.prev()
+        self.assertEqual(0, fp._currentImage)
+        fp.next()
+        self.assertEqual(1, fp._currentImage)
+        fp.next()
+        self.assertEqual(2, fp._currentImage)
+        fp.next()
+        self.assertEqual(2, fp._currentImage)
 
     def test_Text(self):
         text = Text("Arial", 12, (0,20,0))

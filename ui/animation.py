@@ -48,6 +48,13 @@ class Shape(ABC):
         pass
 
 
+class Area(Shape):
+    """
+    Used to implement a window that shows part of an image
+    window can be moved, scrolled, etc..
+    """
+    pass
+
 
 class FlipBook(Shape):
     """
@@ -109,13 +116,28 @@ class FlipBook(Shape):
 
     def prev(self) -> None:
         """
-        decrement the index of current image
+        decrement the index of current image back to the first
         """
-        self.set(self._currentImage - 1)
+        if self._currentImage > 0:
+            self.set(self._currentImage - 1)
 
     def next(self) -> None:
         """
-        increment the index of current image
+        increment the index of current image until the last
+        """
+        if self._currentImage < self.size()-1:
+            self.set(self._currentImage + 1)
+
+
+    def prevc(self) -> None:
+        """
+        decrement the index of current image in a circular fashion
+        """
+        self.set(self._currentImage - 1)
+
+    def nextc(self) -> None:
+        """
+        increment the index of current image in a circular fashion
         """
         self.set(self._currentImage + 1)
 
