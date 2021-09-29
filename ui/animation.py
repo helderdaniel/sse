@@ -6,14 +6,15 @@ from pygame import Surface, Rect, Mask, Color
 from pygame.font import Font
 
 
-class ImageDefinition:
+class Shape:
     """
-    Holds image, Rect and Mask (for collisions)
+    Holds image, Rect, Mask (for collisions) and layer
     """
-    def __init__(self, image:Surface, mask:Mask) -> None:
+    def __init__(self, image:Surface, mask:Mask, layer:int=0) -> None:
         self._image: Surface = image
         self._rect : Rect    = image.get_rect()
         self._mask : Mask    = mask
+        self._layer: int     = layer
 
     @property
     def image(self) -> Surface:
@@ -27,10 +28,14 @@ class ImageDefinition:
     def mask(self) -> mask:
         return self._mask
 
+    @property
+    def layer(self) -> int:
+        return self._layer
 
-class Shape(ABC):
+
+class Animation(ABC):
     """
-    Define shapes for entities and background
+    Define animation sequences for actors and background
     """
 
     @abstractmethod
@@ -41,14 +46,14 @@ class Shape(ABC):
         pass
 
     @abstractmethod
-    def current(self) -> ImageDefinition:
+    def current(self) -> Shape:
         """
         Return current image, rect and mask
         """
         pass
 
 
-class Area(Shape):
+class Area(Animation):
     """
     Used to implement a window that shows part of an image
     window can be moved, scrolled, etc..
@@ -56,7 +61,7 @@ class Area(Shape):
     pass
 
 
-class FlipBook(Shape):
+class FlipBook(Animation):
     """
     A group of images that can be changed with some criteria to
     implement animation
@@ -83,17 +88,16 @@ class FlipBook(Shape):
             self._masks.append(m)
         self.reset()
 
-
+    """
     def copy(self):
-        """
-        Implement shallow copy to reuse images and masks.
-        Present implementation is similar to copy.copy()
-        """
+        #Implement shallow copy to reuse images and masks.
+        #Present implementation is similar to copy.copy()
         fb : FlipBook = self.__class__([])
         fb._images = self._images
         fb._masks  = self._masks
         fb._currentImage = self._currentImage
         return fb
+    """
 
     def size(self) -> int:
         """
@@ -141,16 +145,16 @@ class FlipBook(Shape):
         """
         self.set(self._currentImage + 1)
 
-    def current(self) -> ImageDefinition:
+    def current(self) -> Shape:
         """
         Return current definition
         """
         i = self._images[self._currentImage]
         m = pygame.mask.from_surface(i)
-        return ImageDefinition(i, m)
+        return Shape(i, m)
 
 
-class Text(Shape):
+class Text(Animation):
     """
     Shape to display text messages
     """
@@ -174,11 +178,11 @@ class Text(Shape):
         """
         self._text = message
 
-    def current(self) -> ImageDefinition:
+    def current(self) -> Shape:
         """
         Return current definition
         """
         i = self._font.render(self._fmt.format(self._text), True, self._color)
         m = pygame.mask.from_surface(i)
-        return ImageDefinition(i, m)
+        return Shape(i, m)
     

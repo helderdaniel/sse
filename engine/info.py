@@ -3,23 +3,23 @@ from typing import List, Tuple, Optional
 from abc import ABC, abstractmethod
 
 
-class Info(ABC):
+class ActorInfo(ABC):
     """
-    Basic entities info, such as:
+    Basic actor info, such as:
 
     value
     strength
     stamina
     (...)
 
-    Must be defined for the type of entity desired
+    Must be defined for the type of actor desired
     """
     pass
 
 
 class ValueStrengthInfo(Info):
     """
-    basic entity info on:
+    basic actor info on:
         value
         strength
     """

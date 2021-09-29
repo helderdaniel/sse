@@ -1,5 +1,5 @@
 # sse
-Simple surface engine for 2D games built for Python.
+Scene staging environment is a simple engine for 2D games built for Python.
 
 This is not an exhaustive game engine, it is a very simple engine aimed at 2D game development.
 The samples have some examples on 2D simple games built with this engine.

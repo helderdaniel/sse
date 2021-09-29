@@ -1,25 +1,38 @@
 import unittest
 import pygame
 from sse.ui.animation import *
-from sse.ui.gui import GUI
+from sse.ui.stage import Stage
 
-class TestShape(unittest.TestCase):
+class TestAnimation(unittest.TestCase):
     
-    ui = GUI("Testing", 100, 100)  #needed to initialize Pygame Window
-    imagesPath = ["data/ship0.png", "data/ship1.png", "data/ship2.png"]
+    stage = Stage("Testing", 100, 100, 0)  #needed to initialize Pygame Window
+    imagesPath = ["tests/data/ship0.png", "tests/data/ship1.png", "tests/data/ship2.png"]
     
-    def setImageDefs(self, fname):
+    def setImageDefs(self, fname, layer=None):
         i : Surface = pygame.image.load(fname)
         m : Mask    = pygame.mask.from_surface(i)
         r : Rect    = i.get_rect()
-        d : Shape   = Shape(i, m)
+        if layer is None:
+            d : Shape   = Shape(i, m)
+        else:
+            d : Shape   = Shape(i, m, layer)
         return i,m,r,d
 
-    def test_ImageDefinition(self):
+    def test_Shape01(self):
         i,m,r,d = self.setImageDefs(self.imagesPath[0])
 
         self.assertIs(i, d.image)
         self.assertIs(m, d.mask)
+        self.assertEqual(0, d.layer)
+        self.assertEqual(r, d.rect)
+
+    def test_Shape02(self):
+        l = 4
+        i,m,r,d = self.setImageDefs(self.imagesPath[0], l)
+
+        self.assertIs(i, d.image)
+        self.assertIs(m, d.mask)
+        self.assertEqual(l, d.layer)
         self.assertEqual(r, d.rect)
         
 

@@ -19,9 +19,9 @@ update(events, collisions)
 
 
     1) handle collisions
-            update status of collided entity controller to: HIT or DEAD
+            update status of collided actor controller to: HIT or DEAD
     
-    2) update entity controllers positions (move)
+    2) update actor controllers positions (move)
     
     3) update groups of sprites
 
