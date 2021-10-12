@@ -1,7 +1,7 @@
 import unittest
 
 import pygame
-from sse.ui.stage import Stage
+from sse.engine.stage import Stage
 
 class TestStage(unittest.TestCase):
     

@@ -10,10 +10,13 @@ class Shape:
     """
     Holds image, Rect, Mask (for collisions) and layer
     """
-    def __init__(self, image:Surface, mask:Mask, layer:int=0) -> None:
+    def __init__(self, image:Surface, mask:Mask, rect:Rect=None, layer:int=0) -> None:
         self._image: Surface = image
-        self._rect : Rect    = image.get_rect()
         self._mask : Mask    = mask
+        self._rect : Rect    = rect
+        if rect is None:
+            self._rect = image.get_rect()
+        
         self._layer: int     = layer
 
     @property
@@ -38,7 +41,6 @@ class Animation(ABC):
     Define animation sequences for actors and background
     """
 
-    @abstractmethod
     def reset(self) -> None:
         """
         Resets shape
@@ -53,26 +55,53 @@ class Animation(ABC):
         pass
 
 
-class Area(Animation):
+class Scroll(Animation):
     """
     Used to implement a window that shows part of an image
-    window can be moved, scrolled, etc..
+    window can be moved to show the desired portion of the image
     """
-    pass
+    def __init__(self,  imageFile       : str,
+                        dim             : Tuple[int, int],
+                        resize          : Optional[Tuple[int, int]]=None) -> None:
+        """
+        :param ImageFile       is the filename of the images: jpg, bmp, png (preserves alpha channel)
+        :param dim             is the desired dimension of area to show (width, height)
+        :param resize          is an optional desired redimension (width, height)
+        """
+        
+        #load and resize image
+        i = pygame.image.load(imageFile)
+        if resize is not None:             
+            i = pygame.transform.scale(i, (resize[0], resize[1]))
+            i = pygame.Surface.convert_alpha(i) 
+        self.image = i
+        self.rect = i.get_rect()
+        self.rect.w = dim[0]
+        self.rect.h = dim[1]
+        self.mask   = pygame.mask.from_surface(self.image)
 
+    def current(self) -> Shape:
+        """
+        Return current definition
+        """
+        return Shape(self.image, self.mask, self.rect)
 
+    def show(self, x:int, y:int) -> None:
+        self.rect.x = x
+        self.rect.y = y
+
+    
 class FlipBook(Animation):
     """
-    A group of images that can be changed with some criteria to
-    implement animation
+    A group of images that can be changed in 2 directions
     """
     def __init__(self,  imageFiles   : List[str],
-                        dim          : Optional[Tuple[int, int]]=None,
-                        initialImage : int = 0) -> None:
+                        resize       : Optional[Tuple[int, int]]=None,
+                        initialImage : Optional[int]=0) -> None:
         """
-        ImageFile    is a list of filenames to images: jpg, bmp, png (preserves alpha channel)
-        dim          is the desired dimension (width, height)
-        initialImage is the index of the initial image to set as current
+        :param ImageFile    is a list of filenames to images: jpg, bmp, png (preserves alpha channel)
+        :param initialImage is the index of the initial image to set as current
+        :param resize       is an optional desired redimension (width, height)
         """
         self._initialImage : int = initialImage
         self._currentImage : int = self._initialImage
@@ -80,28 +109,26 @@ class FlipBook(Animation):
         self._masks  : List[Mask]    = []   #avoid recomputing of mask when changed
         for f in imageFiles:
             i = pygame.image.load(f)
-            if dim is not None:             #resize image
-                i = pygame.transform.scale(i, (dim[0], dim[1]))
+            if resize is not None:             #resize image
+                i = pygame.transform.scale(i, (resize[0], resize[1]))
             i = pygame.Surface.convert_alpha(i)    #convert for fast blitting keeping alpha channel
             self._images.append(i)
             m = pygame.mask.from_surface(i)
             self._masks.append(m)
-        self.reset()
 
-    """
     def copy(self):
         #Implement shallow copy to reuse images and masks.
         #Present implementation is similar to copy.copy()
-        fb : FlipBook = self.__class__([])
+        fb : FlipBook = self.__class__([])  #This way can be used with subclasses
         fb._images = self._images
         fb._masks  = self._masks
+        fb._initialImage = self._initialImage
         fb._currentImage = self._currentImage
         return fb
-    """
-
+    
     def size(self) -> int:
         """
-        return number of images in shape
+        return number of images in flipbook
         """
         return len(self._images)
 
@@ -132,19 +159,6 @@ class FlipBook(Animation):
         if self._currentImage < self.size()-1:
             self.set(self._currentImage + 1)
 
-
-    def prevc(self) -> None:
-        """
-        decrement the index of current image in a circular fashion
-        """
-        self.set(self._currentImage - 1)
-
-    def nextc(self) -> None:
-        """
-        increment the index of current image in a circular fashion
-        """
-        self.set(self._currentImage + 1)
-
     def current(self) -> Shape:
         """
         Return current definition
@@ -152,6 +166,24 @@ class FlipBook(Animation):
         i = self._images[self._currentImage]
         m = pygame.mask.from_surface(i)
         return Shape(i, m)
+
+
+class FlipBookCircular(FlipBook):
+    """
+    A group of images that can be changed in a circular fashion
+    """
+
+    def prev(self) -> None:
+        """
+        decrement the index of current image in a circular fashion
+        """
+        self.set(self._currentImage - 1)
+
+    def next(self) -> None:
+        """
+        increment the index of current image in a circular fashion
+        """
+        self.set(self._currentImage + 1)
 
 
 class Text(Animation):

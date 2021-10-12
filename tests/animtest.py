@@ -1,11 +1,11 @@
 import unittest
 import pygame
 from sse.ui.animation import *
-from sse.ui.stage import Stage
+from sse.ui.camera import Camera
 
 class TestAnimation(unittest.TestCase):
     
-    stage = Stage("Testing", 100, 100, 0)  #needed to initialize Pygame Window
+    camera = Camera("Testing", 100, 100, 0)  #needed to initialize Pygame Window
     imagesPath = ["tests/data/ship0.png", "tests/data/ship1.png", "tests/data/ship2.png"]
     
     def setImageDefs(self, fname, layer=None):
@@ -41,7 +41,15 @@ class TestAnimation(unittest.TestCase):
         fp = FlipBook(self.imagesPath)
         i,m,r,d = self.setImageDefs(self.imagesPath[0])
         self.assertEqual(0, fp._currentImage)
-        
+
+        #copy
+        fpcopy = fp.copy()
+        self.assertEqual(fpcopy._initialImage, fp._initialImage)
+        self.assertEqual(fpcopy._currentImage, fp._currentImage)
+        self.assertEqual(fpcopy._images, fp._images)
+        self.assertEqual(fpcopy._masks, fp._masks)
+
+        #current
         d0 = fp.current()
         self.assertEqual(r.w, d0.rect.w)
         self.assertEqual(r.h, d0.rect.h)
@@ -58,24 +66,6 @@ class TestAnimation(unittest.TestCase):
         self.assertEqual(w, d0.rect.w)
         self.assertEqual(h, d0.rect.h)
 
-        #circular
-        fp.reset()
-        self.assertEqual(1, fp._currentImage)
-        fp.nextc()
-        self.assertEqual(2, fp._currentImage)
-        fp.nextc()
-        self.assertEqual(0, fp._currentImage)
-        fp.nextc()
-        self.assertEqual(1, fp._currentImage)
-        fp.set(4)
-        self.assertEqual(1, fp._currentImage)
-        fp.prevc()
-        self.assertEqual(0, fp._currentImage)
-        fp.prevc()
-        self.assertEqual(2, fp._currentImage)
-        fp.prevc()
-        self.assertEqual(1, fp._currentImage)
-
         #bounded
         fp.reset()
         self.assertEqual(1, fp._currentImage)
@@ -89,6 +79,41 @@ class TestAnimation(unittest.TestCase):
         self.assertEqual(2, fp._currentImage)
         fp.next()
         self.assertEqual(2, fp._currentImage)
+
+    def test_FlipBookCircular(self):
+        #Full args
+        w = 60
+        h = 40
+        s = 1
+        fp = FlipBookCircular(self.imagesPath, (w, h), s)
+        self.assertEqual(s, fp._currentImage)
+        self.assertEqual(len(self.imagesPath), fp.size())
+
+        #copy
+        fpcopy = fp.copy()
+        self.assertEqual(fpcopy._initialImage, fp._initialImage)
+        self.assertEqual(fpcopy._currentImage, fp._currentImage)
+        self.assertEqual(fpcopy._images, fp._images)
+        self.assertEqual(fpcopy._masks, fp._masks)
+
+        #circular
+        fp.reset()
+        self.assertEqual(1, fp._currentImage)
+        fp.next()
+        self.assertEqual(2, fp._currentImage)
+        fp.next()
+        self.assertEqual(0, fp._currentImage)
+        fp.next()
+        self.assertEqual(1, fp._currentImage)
+        fp.set(4)
+        self.assertEqual(1, fp._currentImage)
+        fp.prev()
+        self.assertEqual(0, fp._currentImage)
+        fp.prev()
+        self.assertEqual(2, fp._currentImage)
+        fp.prev()
+        self.assertEqual(1, fp._currentImage)
+
 
     def test_Text(self):
         text = Text("Arial", 12, (0,20,0))

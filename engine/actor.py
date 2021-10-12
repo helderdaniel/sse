@@ -1,40 +1,96 @@
 from __future__ import annotations
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 import pygame
-from pygame import Surface, Mask, Rect
 from sse.ui.animation import Shape, Animation
-from sse.engine.role import Role
+from sse.engine.role import Role, RoleNone
+from sse.engine.imoveable import IMoveable
+from sse.engine.ianimable import IAnimable
+from sse.engine.icollidable import ICollidable
+from sse.engine.vector import Vector
 
 
-class Actor(pygame.sprite.DirtySprite):
+class Actor(pygame.sprite.DirtySprite, IMoveable, IAnimable, ICollidable):
     
-    def __init__(self, animations:List[Animation], role:Role) -> None:
+    def __init__(self, animations:List[Animation], role:Role=RoleNone) -> None:
         pygame.sprite.Sprite.__init__(self)
         self._animations : List[Animation] = animations #Sequence of images
         self._role       : Role            = role       #actor controller
         role.actor                         = self       #to call: role.read() 
 
         #Set initial image
-        self.dirty           = 1
-        self._animations[0].reset()  #todo select animation (from dict)
-        shape      : Shape   = self._animations[0].current()
-        self.image : Surface = shape.image
-        self.mask  : Mask    = shape.mask
-        self.rect  : Rect    = self.image.get_rect()
-        
+        self.dirty             = 1
+        self._animSelect : int = 0 #select animation (todo: from List or dict??)
+        self._updateShape()
+        self._colList    : List[Actor] = []  #sprites that collided in current frame
+        self._position = Vector(0,0,0)  #current position
+                                        #can also be accessed form self._role.position
 
-    """
-    def copy(self) -> Actor:
-        #Shalow copy
-        return self.__class__(self, self._animations.copy(), self._role.copy())
-    """                                
+    @property                              
+    def position(self):
+        return self._position
+
+    @property                              
+    def dim(self) -> Tuple[int,int,int]:
+        return (self.rect.w, self.rect.h, 1) #Todo: Actor depth
+
+    def reset(self):
+        for a in self._animations:
+            a.reset()
+        self._role.reset()
+
+    def _updateShape(self):
+        shape : Shape = self._animations[self._animSelect].current()
+        self.image = shape.image
+        self.mask  = shape.mask
+        self.rect  = shape.rect
+
+    def collisions(self, colList:List[Actor]):
+        self._colList = colList
+
+    def move(self, p:Vector) -> None:
+        """
+        Move upper left corner of Actor rect to position (x,y) 
+        """
+        self.rect.x = p.x
+        self.rect.y = p.y
+        self._position = p
+
+    def selectAnimation(self, idx:int) -> None:
+        """
+        Select animation in use
+        pre: 0 <= idx < len(self._animations)
+        """
+        self._animSelect = idx
+        
+    def setImage(self, idx:int) -> None:
+        """
+        Set image in the animation in use
+        pre: 0 <= idx < len(self._animations[self._animSelect])
+        """
+        self._animations[self._animSelect].set(idx)
+        self._updateShape()
+
+    def prevImage(self) -> None:
+        """
+        Previous image in the animation in use, bounded
+        """
+        self._animations[self._animSelect].prev()
+        self._updateShape()
+
+    def nextImage(self) -> None:
+        """
+        Next image in the animation in use, bounded
+        """
+        self._animations[self._animSelect].next()
+        self._updateShape()
+
 
     def update(self, dt:float):
         """
         Updates actor according to role and time elapsed since last frame
         :param dt:  time elapsed since last frame
         """
-        self._role.read(dt)
+        self._role.read(dt, self._colList)
 
         """
         att   : Attitude    = self._getAttitude()
