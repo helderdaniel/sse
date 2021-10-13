@@ -40,7 +40,6 @@ class Director:
         objectsToDraw : pygame.sprite.Group = []
         for g in groups:
             g.update(dt)
-            #objectsToDraw += g.draw(self._screen)
         return objectsToDraw
 
     
@@ -49,6 +48,9 @@ class Director:
         Plays the scene on the stage 
         This is the scene (or game) loop 
         """ 
+        if stage.scenario() is not None:
+            self._camera.setScenario(stage)
+
         while True:           
             #get event (to test quit (remove from contoler))
             events = pygame.event.get()
@@ -62,8 +64,10 @@ class Director:
             if not self._pause:
                 actors = self._update(stage.groups(), self._camera.dt())  #update actors attitude with controllers
                 stage.collisions()                  #detect collisions and send info to actors
-                self._camera.shoot(stage.groups())  #draw frame
+                if stage.scenario() is not None:
+                    self._camera.restore(stage)     #restore scenario
+                self._camera.shoot(stage)           #draw frame
 
-                if stage.isCompleted():
+                if stage.sceneEnded():
                     return True
      

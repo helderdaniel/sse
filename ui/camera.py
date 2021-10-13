@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import List, Tuple, Optional
 import pygame
 from pygame import Surface
+from sse.engine.stage import Stage
 from sse.engine.imoveable import IMoveable
 
 #TODO: Camera controller 
@@ -36,7 +37,22 @@ class Camera(IMoveable):
     def move(self, p:Vector):
         pass
 
-    def shoot(self, groups:List[pygame.sprite.Group]) -> None:
+    def setScenario(self, stage:Stage) -> None:
+        '''
+        Set scenario
+        '''
+        self._screen.blit(stage.scenario(), (0, 0))
+        pygame.display.update()
+        
+    def restore(self, stage:Stage) -> None:
+        '''
+        restore scenario removing all objects in groups[]
+        '''
+        for g in stage.groups():
+            g.clear(self._screen, stage.scenario())    
+
+
+    def shoot(self, stage:Stage) -> None:
         '''
         Take picture, actually draw frame
         '''
@@ -45,10 +61,15 @@ class Camera(IMoveable):
         self._dt = pygame.time.Clock().tick(self._fps) / 1000 
         #print("{:.2f} {}".format(1/(self._dt), self._dt))
         
-        for g in groups:
-            g.draw(self._screen)
+        actors : pygame.sprite.Group = []
+        for g in stage.groups():
+            actors += g.draw(self._screen)
 
-        pygame.display.flip()                  #flip double buffer
+        if stage.scenario() is None:
+            pygame.display.flip()           #flip double buffer
+        else:
+            pygame.display.update(actors)   #update actors over scenario
+            
 
         """
         Using display.update() to repaint background over sprites and 

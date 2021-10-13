@@ -15,7 +15,7 @@ class Actor(pygame.sprite.DirtySprite, IMoveable, IAnimable, ICollidable):
         pygame.sprite.Sprite.__init__(self)
         self._animations : List[Animation] = animations #Sequence of images
         self._role       : Role            = role       #actor controller
-        role.actor                         = self       #to call: role.read() 
+        role.entity                        = self       #to call: role.read() 
 
         #Set initial image
         self.dirty             = 1

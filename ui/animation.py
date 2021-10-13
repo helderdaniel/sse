@@ -61,8 +61,8 @@ class Scroll(Animation):
     window can be moved to show the desired portion of the image
     """
     def __init__(self,  imageFile       : str,
-                        dim             : Tuple[int, int],
-                        resize          : Optional[Tuple[int, int]]=None) -> None:
+                        dim             : Tuple[(int, int)],
+                        resize          : Optional[Tuple(int,int)]=None) -> None:
         """
         :param ImageFile       is the filename of the images: jpg, bmp, png (preserves alpha channel)
         :param dim             is the desired dimension of area to show (width, height)
@@ -96,7 +96,7 @@ class FlipBook(Animation):
     A group of images that can be changed in 2 directions
     """
     def __init__(self,  imageFiles   : List[str],
-                        resize       : Optional[Tuple[int, int]]=None,
+                        resize       : Optional[Tuple(int, int)]=None,
                         initialImage : Optional[int]=0) -> None:
         """
         :param ImageFile    is a list of filenames to images: jpg, bmp, png (preserves alpha channel)

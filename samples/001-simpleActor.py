@@ -14,9 +14,9 @@ from sse.engine.vector import Vector
 from sse.engine.bounds import Bounds
 
 
-imagesPath = ["tests/data/ship0.png", "tests/data/ship1.png", 
-              "tests/data/ship0.png", "tests/data/ship2.png"]
-background = ["samples/resources/images/background/planetRising.png"]
+imagesPath  = ["tests/data/ship0.png", "tests/data/ship1.png", 
+               "tests/data/ship0.png", "tests/data/ship2.png"]
+scnImage    = "samples/resources/images/background/planetRising.png"
 scrollImage = "samples/resources/images/background/spacerunV.png"
 #scrollImage = "samples/resources/images/background/spacerunH.png"
 initialPosition0 = Vector(380,300,0)
@@ -68,8 +68,8 @@ width    = 1024
 height   = 800
 speed0   = Vector(-50,20,0)
 speed1   = Vector(50,-20,0)
-margins  = Bounds(10,10,10,10,0,0)
-bounds0  = Bounds(0,width-1,0,height-1,0,0)
+#margins  = Bounds(10,10,10,10,0,0)
+bounds0  = Bounds(10,width-10,10,height-10,0,0)
 fps      = 30
 actorFPS = 5
 
@@ -78,13 +78,13 @@ actorFPS = 5
 camera   = Camera('Simple actor demo', width, height, fps)
 
 fp0      = FlipBookCircular(imagesPath, resize=(40,40))
-role0    = RoleBounceSweep(initialPosition0, speed0, actorFPS, 
-                               bounds0, margins, False, 0)
+role0    = RoleBounceSweep(initialPosition0, speed0, bounds0, 
+                           False, actorFPS, 0)
 actor0   = Actor([fp0], role0)
 
 fp1      = FlipBookCircular(imagesPath, resize=(40,40))
-role1    = RoleBounceSweep(initialPosition1, speed1, actorFPS, 
-                               bounds0, margins, False, 0)
+role1    = RoleBounceSweep(initialPosition1, speed1, bounds0, 
+                           False, actorFPS, 0)
 actor1   = Actor([fp1], role1)
 
 '''
@@ -93,11 +93,12 @@ scenario = Actor([fp])
 '''
 scroll   = Scroll(scrollImage, (width,height))
 role2    = RoleScroll(initialPosition2, speed2, bounds2)
-scenario = Actor([scroll], role2)
+background = Actor([scroll], role2)
 
-stage    = SimpleStage(None)
+#stage    = SimpleStage()
+stage    = SimpleStage(scnImage, (width,height))
 stage.addFoe(actor0)
 stage.addFriend(actor1)
-stage.addNeutral(scenario)
+#stage.addNeutral(background)
 director = Director(camera, [stage])
 director.action()
