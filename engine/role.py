@@ -82,7 +82,7 @@ class RoleBounceSweep(Role):
                     self._diretion.data[i] *= -1 #invert
             self._position.data[i] += dt * self._speed.data[i] * self._diretion.data[i]
 
-        self._entity.move(self._position)  
+        self._entity.move()  
         
 
 
@@ -92,9 +92,18 @@ class RoleScroll(Role):
     """
     def __init__(self, initialPosition: Vector, speed: Vector,
                        bounds: Bounds) -> None:
-        speed.y *= -1                       
+
+        #Invert bounds, and speed x,y so that arguments are positive
+        speed.x *= -1                       
+        speed.z *= -1
+        for i in range(len(bounds.data)):
+            bounds.data[i] = (
+                bounds.data[i][0] * -1,
+                bounds.data[i][1] * -1
+            )
+        initialPosition = initialPosition.scalarProduct(-1)   
         super().__init__(initialPosition, speed, bounds)
-        
+
     
     def read(self, dt:float, colList:List[Sprite]) -> None:
         """
@@ -104,13 +113,10 @@ class RoleScroll(Role):
         #Move with specified speed in pixels/sec
         for i in range(self._position.dim()):
             self._position.data[i] += dt * self._speed.data[i]
-            if self._position.data[i] < self._bounds.data[i][0]:
+            if self._position.data[i] > self._bounds.data[i][0]:
                 self._position.data[i] = self._initialPos.data[i]
-            if self._position.data[i] > self._bounds.data[i][1]:
+            if self._position.data[i] < self._bounds.data[i][1]:
                 self._position.data[i] = self._initialPos.data[i]
 
-        #Invert coordinate to display
-        pos = self._position.scalarProduct(-1)
-        self._entity.move(pos)  
-
-        print(self._position)
+        self._entity.move()  
+        #print(self._position)

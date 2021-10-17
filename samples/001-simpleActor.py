@@ -32,6 +32,15 @@ initialPosition2 = Vector(0,16380,0)  #full height is: 17180
 speed2   = Vector(0,1500,0)
 bounds2  = Bounds(0,0,1,16379,0,0)
 
+#To scroll image up, illusion moving down:
+#   Init at top of image
+#   set y-axis speed negative (move backimage up)
+#   set y-min (top) bounds == 1 to wrap down when at that y
+#   set y-max (bottom) bounds == 16379 to wrap up when at that y
+#   Note: must set both y-min and y-max
+#initialPosition2 = Vector(0,0,0)  #full height is: 17180
+#speed2   = Vector(0,-1500,0)
+#bounds2  = Bounds(0,0,1,16379,0,0)
 
 #To scroll image left, illusion moving right:
 #   Init at left of image
@@ -42,17 +51,6 @@ bounds2  = Bounds(0,0,1,16379,0,0)
 #initialPosition2 = Vector(0,0,0)  #full height is: 17180
 #speed2   = Vector(1500,0,0)
 #bounds2  = Bounds(1,16099,0,00,0)
-
-
-#To scroll image up, illusion moving down:
-#   Init at top of image
-#   set y-axis speed negative (move backimage up)
-#   set y-min (top) bounds == 1 to wrap down when at that y
-#   set y-max (bottom) bounds == 16379 to wrap up when at that y
-#   Note: must set both y-min and y-max
-#initialPosition2 = Vector(0,0,0)  #full height is: 17180
-#speed2   = Vector(0,-1500,0)
-#bounds2  = Bounds(0,0,1,16380,0,0)
 
 #To scroll image right, illusion moving left:
 #   Init at rigth of image
@@ -68,8 +66,8 @@ width    = 1024
 height   = 800
 speed0   = Vector(-50,20,0)
 speed1   = Vector(50,-20,0)
-#margins  = Bounds(10,10,10,10,0,0)
-bounds0  = Bounds(10,width-10,10,height-10,0,0)
+#bounds0  = Bounds(10,width-10,10,height-10,0,0)
+bounds0  = Bounds(-100,1920-10,10,1200-10,0,0)
 fps      = 30
 actorFPS = 5
 
@@ -96,7 +94,7 @@ role2    = RoleScroll(initialPosition2, speed2, bounds2)
 background = Actor([scroll], role2)
 
 #stage    = SimpleStage()
-stage    = SimpleStage(scnImage, (width,height))
+stage    = SimpleStage(scnImage)#, (width,height))
 stage.addFoe(actor0)
 stage.addFriend(actor1)
 #stage.addNeutral(background)

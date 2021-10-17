@@ -59,7 +59,7 @@ class Camera(IMoveable):
         #set maximum FPS
         #dt is time since last call in secs (convert ms to secs)
         self._dt = pygame.time.Clock().tick(self._fps) / 1000 
-        #print("{:.2f} {}".format(1/(self._dt), self._dt))
+        print("{:.2f} {}".format(1/(self._dt), self._dt))
         
         actors : pygame.sprite.Group = []
         for g in stage.groups():

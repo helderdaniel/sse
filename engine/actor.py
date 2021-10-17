@@ -22,8 +22,7 @@ class Actor(pygame.sprite.DirtySprite, IMoveable, IAnimable, ICollidable):
         self._animSelect : int = 0 #select animation (todo: from List or dict??)
         self._updateShape()
         self._colList    : List[Actor] = []  #sprites that collided in current frame
-        self._position = Vector(0,0,0)  #current position
-                                        #can also be accessed form self._role.position
+        self._position = self._role.position #get current position from Role                                   
 
     @property                              
     def position(self):
@@ -47,13 +46,12 @@ class Actor(pygame.sprite.DirtySprite, IMoveable, IAnimable, ICollidable):
     def collisions(self, colList:List[Actor]):
         self._colList = colList
 
-    def move(self, p:Vector) -> None:
+    def move(self) -> None:
         """
-        Move upper left corner of Actor rect to position (x,y) 
+        Move upper left corner of Actor rect to current role position
         """
-        self.rect.x = p.x
-        self.rect.y = p.y
-        self._position = p
+        self.rect.x = self._position.x
+        self.rect.y = self._position.y
 
     def selectAnimation(self, idx:int) -> None:
         """
